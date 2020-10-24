@@ -1,35 +1,54 @@
 import os
+import json
 import argparse
+import sklearn
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import sklearn
+from constants import *
 
-def train(path):
+def process_entry(entry):
     pass
 
-def test(path):
+def train(config):
+    
+    # Read excel
+    df = pd.read_excel(config[TRAIN_PATH], na_values=None)
+
+    # Store values in 2D array
+    data = df.iloc[:].values
+    processed = []
+    declared_symptoms = set()
+    actual_symptoms = set()
+    for entry in data:
+        try:
+            declared = entry[4].lower()
+            split_arr = declared.split(",")
+            for s in split_arr:
+                declared_symptoms.add(s)
+        except AttributeError as e:
+            pass
+        try:
+            actual = entry[6].lower()
+            split_arr = actual.split(",")
+            for s in split_arr:
+                actual_symptoms.add(s)
+        except AttributeError as e:
+            pass
+    print("Declared:", len(declared_symptoms))
+    print("Actual:", len(actual_symptoms))
+    pass
+ 
+def test(config):
     pass
 
-def main(args):
-    if args.mode == "train":
-        if args.train_path == None:
-            print("Please enter the path to the training dataset.")
-            exit()
-        else:
-            train(args.train_path)
-    if args.mode == "predict":
-        if args.input_file == None:
-            print("Please enter the path to the test dataset.")
-            exit()
-        else:
-            test(args.input_file)
-
+def main():
+    config = {}
+    with open("config.json", "r") as config_file:
+        config = json.load(config_file)
+    if config["mode"] == "train":
+        train(config)
+    
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", help="train / predict", required=True)
-    parser.add_argument("--train_path", help="Path to the training dataset.")
-    parser.add_argument("--input_file", help="Path to the test dataset.")
-    args = parser.parse_args()
-    main(args)
+    main()

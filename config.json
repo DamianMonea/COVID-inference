@@ -1,0 +1,5 @@
+{
+    "mode": "train",
+    "train_path": "./dataset.xlsx",
+    "test_path": ""
+}
