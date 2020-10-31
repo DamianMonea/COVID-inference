@@ -10,6 +10,10 @@ from constants import *
 def process_entry(entry):
     pass
 
+def extract_features(entry):
+    # Apel parsere pentru entry
+    pass
+
 def train(config):
     
     # Read excel
