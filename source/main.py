@@ -46,12 +46,25 @@ def train(config):
 def test(config):
     pass
 
+class covid_detector:
+
+    def __init__(self, config):
+        self.config = config
+
+    def train(self):
+        # Read excel
+        df = pd.read_excel(self.config[TRAIN_PATH], na_values=None)
+
+        # Store values in 2D array
+        data = df.iloc[:].values
+        pass
+
 def main():
     config = {}
     with open("config.json", "r") as config_file:
         config = json.load(config_file)
-    if config["mode"] == "train":
-        train(config)
+    detector = covid_detector(config)
+    detector.train()
     
 if __name__ == "__main__":
 
