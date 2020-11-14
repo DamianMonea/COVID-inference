@@ -18,7 +18,7 @@ def main():
 
     list = []
     for entry in data:
-        val = re.split("^\s+|\s*,\s*|\s+$", str(entry[4]))
+        val = re.split("^\s+|\s*,\s*|\s+$", str(entry[6]))
 
         for i in val:
             print(parse_simptoms(i))
@@ -146,7 +146,7 @@ def parse_simptoms(simptoms):
     # reconstructing the data as a dictionary
     dict = json.loads(data)
     list = [0] * (len(dict) - 1)
-    dict[22] = 36.5
+    list[22] = 36.5
     for key in dict:
         val = search_value(simptoms, key)
         if val[0]:
