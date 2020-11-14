@@ -6,6 +6,13 @@ import sys
 import tornado.gen
 import pandas as pd
 from tornado.escape import json_encode
+import numpy as np
+
+
+def handleNan(element):
+    if element == 'Nan':
+        return None
+    return element
 
 class Client(object):
     def __init__(self, join_url, play_url):
@@ -13,7 +20,7 @@ class Client(object):
         self.join_url = join_url
         self.play_url = play_url
         self.user_details = {}
-        self.all_data_from_excel = {}
+        self.all_data_from_excel = []
         self.json_data_list = []
 
     def interact(self):
@@ -22,30 +29,27 @@ class Client(object):
 
     def load_maze(self, filename):
         try:
-            df = pd.read_excel(filename, na_values=None)
+            df = pd.read_excel(filename, na_values=None, dtype=str)
             data = df.iloc[:].values
             for entry in data:
+                aux_dict = {}
                 try:
-                    self.all_data_from_excel['instituția sursă'] = entry[0]
-                    self.all_data_from_excel['sex'] = entry[1]
-                    self.all_data_from_excel['vârstă'] = entry[2]
-                    self.all_data_from_excel['dată debut simptome declarate'] = entry[3]
-                    self.all_data_from_excel['simptome declarate'] = entry[4]
-                    self.all_data_from_excel['dată internare'] = entry[5]
-                    self.all_data_from_excel['simptome raportate la internare'] = entry[6]
-                    self.all_data_from_excel['diagnostic și semne de internare'] = entry[7]
-                    self.all_data_from_excel['istoric de călătorie'] = entry[8]
-                    self.all_data_from_excel['mijloace de transport folosite'] = entry[9]
-                    self.all_data_from_excel['confirmare contact cu o persoană infectată'] = entry[10]
-                    self.all_data_from_excel['data rezultat testare'] = entry[11]
-                    self.all_data_from_excel['rezultat testare'] = entry[12]
-                    self.json_data_list.append(self.all_data_from_excel)
+                    aux_dict['instituția sursă'] = handleNan(entry[0])
+                    aux_dict['sex'] = handleNan(entry[1])
+                    aux_dict['vârstă'] = handleNan(entry[2])
+                    aux_dict['dată debut simptome declarate'] = handleNan(entry[3])
+                    aux_dict['simptome declarate'] = handleNan(entry[4])
+                    aux_dict['dată internare'] = handleNan(entry[5])
+                    aux_dict['simptome raportate la internare'] = handleNan(entry[6])
+                    aux_dict['diagnostic și semne de internare'] = handleNan(entry[7])
+                    aux_dict['istoric de călătorie'] = handleNan(entry[8])
+                    aux_dict['mijloace de transport folosite'] = handleNan(entry[9])
+                    aux_dict['confirmare contact cu o persoană infectată'] = handleNan(entry[10])
+                    aux_dict['data rezultat testare'] = handleNan(entry[11])
+                    aux_dict['rezultat testare'] = handleNan(entry[12])
+                    self.json_data_list.append(aux_dict)
                 except AttributeError as e:
                     print(e)
-            # file_to_write_JSON_ARRAY = open("JSON_ARRAY.txt", "w+")
-            # file_to_write_JSON_ARRAY.write( json.dumps(self.json_data_list, indent=4, default=str, ensure_ascii=False))
-            # file_to_write_JSON_ARRAY.close()
-            print("YOUR JSON ARRAY date from excel you receive is in file JSON_ARRAY.txt and variable json_data_list")
         except FileNotFoundError as er:
             print(er)
             print(self.load_maze(self.interact()))
@@ -71,11 +75,10 @@ class Client(object):
             elif (msg_type == 'J'):
                 msg = {}
                 msg['type'] = 'J'
-                msg['message'] =  json.dumps(self.json_data_list, indent=4, default=str, ensure_ascii=False)
+                msg['message'] =  json.dumps(self.json_data_list, indent=4, default=str, ensure_ascii=False).replace("NaN" ,"null")
                 msg1 = "Message to send: send JSON array to server"
                 print(msg1)
                 return msg
-            
 
     def init(self):
         print("Getting initial user details")

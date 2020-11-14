@@ -38,10 +38,10 @@ class GameHandler(tornado.websocket.WebSocketHandler):
             print("Received from client, msg = json_array")
             msg = "Successful operation to receive json_array"
             self.write_message((msg))
-            self.json_array = res['message']
-            # file_to_write_JSON_ARRAY = open("JSON_ARRAY.txt", "w+")
-            # file_to_write_JSON_ARRAY.write( self.json_array)
-            # file_to_write_JSON_ARRAY.close()
+            self.json_array = json.loads(res['message'])
+            with open("JSON_ARRAY.json", "w+", encoding='utf8') as name:
+                json.dump(self.json_array, name, ensure_ascii=False)
+
         elif res['type'] == 'M':
             print("Received from client, msg = ", message)
             msg = "Server: " + message
