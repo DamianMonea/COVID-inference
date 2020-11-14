@@ -21,6 +21,7 @@ def main():
         val = re.split("^\s+|\s*,\s*|\s+$", str(entry[4]))
 
         for i in val:
+            print(parse_simptoms(i))
             i = i.lower()
             if i != '':
                 if i[0] != ' ' and i[0] != 'n':
@@ -55,7 +56,6 @@ def main():
             nr += 1
             list.remove(list[i])
         i += 1
-    print(parse_simptoms(" tuse dureri musculare  subfebrilitate palpitatii  greturi  varsaturi  sindrom febril tuse dificit motor hemicorp dr "))
 
 
 
@@ -126,7 +126,7 @@ def search_value(simptoms, simptom):
                 if val[1]:
                     temp = val[2]
                 else:
-                    temp = 37
+                    temp = 38
             elif val[1]:
                 index = val[0]
                 nr += 1
@@ -146,6 +146,7 @@ def parse_simptoms(simptoms):
     # reconstructing the data as a dictionary
     dict = json.loads(data)
     list = [0] * (len(dict) - 1)
+    dict[22] = 36.5
     for key in dict:
         val = search_value(simptoms, key)
         if val[0]:
