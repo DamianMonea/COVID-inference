@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from constants import *
+from covid_detector import covid_detector
 
 def process_entry(entry):
     pass
@@ -45,19 +46,6 @@ def train(config):
  
 def test(config):
     pass
-
-class covid_detector:
-
-    def __init__(self, config):
-        self.config = config
-
-    def train(self):
-        # Read excel
-        df = pd.read_excel(self.config[TRAIN_PATH], na_values=None)
-
-        # Store values in 2D array
-        data = df.iloc[:].values
-        pass
 
 def main():
     config = {}
