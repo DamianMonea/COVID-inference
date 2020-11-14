@@ -55,7 +55,7 @@ def main():
             nr += 1
             list.remove(list[i])
         i += 1
-    print(parse_simptoms("ameteli greturi parestezii"))
+    print(parse_simptoms(" tuse dureri musculare  subfebrilitate palpitatii  greturi  varsaturi  sindrom febril tuse dificit motor hemicorp dr "))
 
 
 
@@ -65,8 +65,18 @@ def search(index, simptoms, simptom):
     j = 0
     miss = 0
     i = index
+    if i >= len(simptoms) - 1:
+        return (0, False)
+
     if simptom[0] == '<':
-        res = simptoms
+        if simptoms[i] in '1234567890':
+            nr = 0
+            while i < len(simptoms) and simptoms[i] in '1234567890':
+                nr = nr*10 + ord(simptoms[i]) - ord('0')
+                i += 1
+            return (i, True, nr);
+        else:
+            return (0, False)
     while i < len(simptoms):
         if simptoms[i] == simptom[j] and j < len(simptom) - 1:
             j += 1
@@ -75,7 +85,12 @@ def search(index, simptoms, simptom):
                 i += 1
             while i < len(simptoms) and (simptoms[i] == ' ' or simptoms[i] == ','):
                 i += 1
-            i -= 1
+            return (i, True, j)
+        elif j == len(simptom) - 1 and miss == 0:
+            while i < len(simptoms) and simptoms[i] != ' ' and simptoms[i] != ',':
+                i += 1
+            while i < len(simptoms) and (simptoms[i] == ' ' or simptoms[i] == ','):
+                i += 1
             return (i, True, j)
         elif j > 1 and miss == 0:
             miss = 1
@@ -90,13 +105,12 @@ def search(index, simptoms, simptom):
 def search_value(simptoms, simptom):
 
     res = []
+    temp = 0
     if (" " in simptom):
         res = re.split("\s+", simptom)
     if len(res) == 0:
         x = search(0,simptoms, simptom)
-        if x[1]:
-            print(x, simptom)
-        return x[1]
+        return (x[1], temp)
     else:
         index = 0
         list = []
@@ -107,16 +121,21 @@ def search_value(simptoms, simptom):
             val = search(index, simptoms, i)
             list.append(val)
             length += len(i) - 1
-            if val[1]:
+            if i[0] == '<':
+                score += len(i)
+                if val[1]:
+                    temp = val[2]
+                else:
+                    temp = 37
+            elif val[1]:
                 index = val[0]
                 nr += 1
                 score += val[2]
 
-        if (score > length/(len(res) - 1)):
-            print(list, simptom, score, length/(len(res) - 1))
-            return True
+        if (score > length/(len(res))):
+            return (True, temp)
 
-    return False
+    return (False, temp)
 
 
 def parse_simptoms(simptoms):
@@ -126,12 +145,14 @@ def parse_simptoms(simptoms):
 
     # reconstructing the data as a dictionary
     dict = json.loads(data)
-    print(dict)
     list = [0] * (len(dict) - 1)
     for key in dict:
-        if search_value(simptoms, key):
-            list[dict[key]] = 1
-
+        val = search_value(simptoms, key)
+        if val[0]:
+            if val[1] > 0:
+                list[dict[key]] = val[1]
+            else:
+                list[dict[key]] = 1
     return list
 
 
