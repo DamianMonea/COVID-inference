@@ -5,6 +5,7 @@ import sklearn
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from constants import simptom_dict as dict
 from constants import *
 import re
 
@@ -21,7 +22,7 @@ def main():
         val = re.split("^\s+|\s*,\s*|\s+$", str(entry[6]))
 
         for i in val:
-            print(parse_simptoms(i))
+
             i = i.lower()
             if i != '':
                 if i[0] != ' ' and i[0] != 'n':
@@ -56,10 +57,16 @@ def main():
             nr += 1
             list.remove(list[i])
         i += 1
-
-
-
+    print(parse_simptoms("DURERI HIPOCONDRUL DREPT, GREATA, SUBFEBRILITATI"))
     pass
+# functia search primeste urmatorii parametrii
+# index reprezinta indexul de unde va incepe cautarea in simptoms
+# functia returneaza un tuplu
+# prima valaore este indexul din simptoms unde a ramas cautarea
+#                             (e utilizat in principiu ca in cazul in acre simptom e din doua cuvinte
+#                                       sa pot sa-l gasesc pe al doilea)
+# al doiela este true sau false , in functie daca este gasit simptomul respectiv sau nu
+# ultimul este numarul de caractere comune cu elementul comun din simptoms
 def search(index, simptoms, simptom):
 
     j = 0
@@ -68,6 +75,7 @@ def search(index, simptoms, simptom):
     if i >= len(simptoms) - 1:
         return (0, False)
 
+    #exista un caz separat pentru temperatura pentru o parsare separata
     if simptom[0] == '<':
         if simptoms[i] in '1234567890':
             nr = 0
@@ -77,21 +85,26 @@ def search(index, simptoms, simptom):
             return (i, True, nr);
         else:
             return (0, False)
+    # se itereaza prin tot string-ul simptoms pentru a gasi cuvantul salvat in simptom
     while i < len(simptoms):
         if simptoms[i] == simptom[j] and j < len(simptom) - 1:
             j += 1
+        #urmatoarele doua conditii sunt pentru oprire
+        #condtia  de len > 4 este folosite in aczul simptomelor cu putine caractere
         elif j > len(simptom) - 2 and len(simptom) > 4:
             while i < len(simptoms) and simptoms[i] != ' ' and simptoms[i] != ',':
                 i += 1
             while i < len(simptoms) and (simptoms[i] == ' ' or simptoms[i] == ','):
                 i += 1
             return (i, True, j)
+        #simptomele cu putine caractere sunt tratate pe aceasta conditie
         elif j == len(simptom) - 1 and miss == 0:
             while i < len(simptoms) and simptoms[i] != ' ' and simptoms[i] != ',':
                 i += 1
             while i < len(simptoms) and (simptoms[i] == ' ' or simptoms[i] == ','):
                 i += 1
             return (i, True, j)
+        #in cazul in care un caracter este gresit din dataset il tratam ca o litera lipsa
         elif j > 1 and miss == 0:
             miss = 1
             j += 1
@@ -101,16 +114,21 @@ def search(index, simptoms, simptom):
         i += 1
 
     return (0, False)
-
+#returneaza un tuplu
+# 1 prima valaore fiin true sau false inc azul in care simptom se gaseste in simptoms
+# 2 se foloseste doar in cazul temperaturii
 def search_value(simptoms, simptom):
 
     res = []
     temp = 0
+    simptoms = simptoms.lower()
     if (" " in simptom):
         res = re.split("\s+", simptom)
     if len(res) == 0:
         x = search(0,simptoms, simptom)
         return (x[1], temp)
+    #in cazul in care simptomul este format din mai multe cuvinte
+    # se cauta fiecare cuvant in parte in simptoms
     else:
         index = 0
         list = []
@@ -118,9 +136,11 @@ def search_value(simptoms, simptom):
         score = 0
         length = 0
         for i in res:
+            #functia search cauta cuvantul i in simptoms de la index
             val = search(index, simptoms, i)
             list.append(val)
             length += len(i) - 1
+            #conditie separata pentru temperatura
             if i[0] == '<':
                 score += len(i)
                 if val[1]:
@@ -131,7 +151,8 @@ def search_value(simptoms, simptom):
                 index = val[0]
                 nr += 1
                 score += val[2]
-
+        #daca nuamrul de caractere gasite e mai mult decat media caracterelor
+        # cautate am considreat ca e gasit
         if (score > length/(len(res))):
             return (True, temp)
 
@@ -139,12 +160,9 @@ def search_value(simptoms, simptom):
 
 
 def parse_simptoms(simptoms):
-    with open('simptome.json') as f:
-        data = f.read()
 
 
     # reconstructing the data as a dictionary
-    dict = json.loads(data)
     list = [0] * (len(dict) - 1)
     list[22] = 36.5
     for key in dict:
