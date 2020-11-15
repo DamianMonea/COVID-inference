@@ -56,6 +56,6 @@ def result_parser(entry):
     if entry == "pozitiv":
         return 1
     elif entry == "negativ":
-        return 2
-    else:
         return 0
+    else:
+        return 2
