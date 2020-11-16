@@ -1,0 +1,16 @@
+/*
+In acest document vor fi descrise fisierele si functiile acestora
+*/
+
+I.parseTimeDate.py: (parseaza date calendaristice)
+    1.diff_dates =>
+        * functie care face diferenta intre 01.01.2020 si data trimisa si returneaza
+    numarul de zile;
+    2.hasNumbers
+        * functie care verifica daca exista numere valide in string-ul primit;
+    3.findDate
+        * functie care gaseste o data calendaristica valida intr-un string;
+    4.parseTime
+        * functie de parsare a unei date calendaristice si returnarea unui intreg
+        reprezentand un numar de zile diferenta fata de 01.01.2020 sau None daca 
+        strig-ul primit nu e o data calendaristica;
