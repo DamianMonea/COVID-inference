@@ -1,9 +1,4 @@
-MODE = "mode"
-TRAIN = "train"
-TEST = "test"
-TRAIN_PATH = "train_path"
-TEST_PATH = "test_path"
-simptom_dict = {"febra": 0,
+{"febra": 0,
   "durere abdominala": 1,
   "dureri epigastrice": 1,
   "durere retrosternala": 2,
@@ -42,7 +37,6 @@ simptom_dict = {"febra": 0,
   "icter": 24,
   "inapententa": 25,
   "lipsa de gust": 25}
-
 
 
 
