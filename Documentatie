@@ -35,3 +35,13 @@ I.parseTimeDate.py: (parseaza date calendaristice)
         0 pentru negativ, 1 pentru pozitiv sau 2 pentru orice alta intrare;
         
  III. mean_age_calculator.py: (calculeaza varsta medie din setul de date)
+ IV. symptom_parser.py:
+       1. main-ul =>
+            *utilzat pentru a putea crea dictionarul de simptome.
+       2. parse_symptoms =>
+            *functie pe baza unui string dat se creaza o lista avand ca date 1/0 fiecare index fiind predestinat unui simptom.
+       3. search_value =>
+            *functie de cautare a simptomului in string-ul dat ca parametru pentru functia parse_symptoms.
+       4. search =>
+            *functie de cautare a unui substring intr-un string permitand eliminarea unei litere.
+       
