@@ -6,6 +6,7 @@ import tornado.websocket
 import uuid
 import json
 from ast import literal_eval
+from covid_detector import covid_detector
 
 class Controller(object):
     def __init__(self):

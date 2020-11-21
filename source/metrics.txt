@@ -1,4 +1,4 @@
-Accuracy:89.23
+Accuracy:89.23%
 True positives:2
 False positives:0
 True negatives:520

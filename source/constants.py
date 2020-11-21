@@ -1,6 +1,5 @@
 MODE = "mode"
 TRAIN = "train"
-TEST = "test"
 PREDICT = "predict"
 MODEL_NAME = "covid_model"
 VERBOSE = "verbose"

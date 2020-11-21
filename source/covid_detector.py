@@ -10,7 +10,7 @@ from symptom_parser import *
 from parseTimeDate import parseTime
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix, accuracy_score, roc_curve, roc_auc_score
+from sklearn.metrics import confusion_matrix, accuracy_score, roc_curve, roc_auc_score, plot_confusion_matrix
 
 class covid_detector:
 
@@ -143,6 +143,9 @@ class covid_detector:
             plt.title("AUC Curve")
             plt.legend(loc=4)
             plt.savefig("auc_curve.png", dpi=300, bbox_inches='tight')
+            plot_confusion_matrix(self.model, X_test, y_test)
+            plt.title("Confusion matrix")
+            plt.savefig("confusion_matrix.png", dpi=300, bbox_inches='tight')
         
         pickle.dump(self.model, open(MODEL_NAME + ".pkl", 'wb'))
         if self.config[VERBOSE] == True:
@@ -150,7 +153,7 @@ class covid_detector:
 
     # Function to be used for predicting on data through the API
     def predict(self, data):
-        pass
+        X = []
 
 if __name__ == "__main__":
 
