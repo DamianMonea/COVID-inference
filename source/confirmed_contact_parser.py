@@ -5,9 +5,8 @@ from math import isnan
 
 class confirmed_contact_parser:
 
-    def __init__(self, keyword_path = ""):
-        if keyword_path == "":
-            self.keywords = {"positive": 3, "negative": 2, "possible": 1, "other": 0}
+    def __init__(self):
+        self.keywords = {"positive": 3, "negative": 2, "possible": 1, "other": 0}
 
     def check_nan(self, e):
         return isinstance(e, float) and isnan(e)

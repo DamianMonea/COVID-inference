@@ -1,6 +1,7 @@
 MODE = "mode"
 TRAIN = "train"
 TEST = "test"
+PREDICT = "predict"
 TRAIN_PATH = "train_path"
 TEST_PATH = "test_path"
 simptom_dict = {"febra": 0,

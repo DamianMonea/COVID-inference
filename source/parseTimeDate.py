@@ -4,10 +4,8 @@ import datefinder
 import os
 import json
 import argparse
-import sklearn
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from constants import *
 from dateutil.parser import parse
 from pandas.io.parsers import ParserError
