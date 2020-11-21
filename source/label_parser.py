@@ -2,11 +2,10 @@ import string
 import pandas as pd
 import numpy as np
 from constants import *
-
+from math import isnan
 
 def isNaN(string):
     return string != string
-
 
 def institution_parser(entry):
     source = entry.lower()
@@ -33,7 +32,7 @@ def sex_parser(entry):
         return 0
 
 
-def age_parser(entry, mean_age):
+def age_parser(entry, mean_age=0):
 
     age = entry.lower().replace(" ", "")
 
@@ -41,7 +40,7 @@ def age_parser(entry, mean_age):
         return mean_age
     elif "lun" in age and "an" in age:
         return age[0]
-    elif "nou" in age or "lun" in age or "zi" in age or "ore" in age:
+    elif "nou" in age or "lun" in age or "zi" in age or "ore" in age or "sap" in age:
         return 1
     elif "an" in age:
         return int("".join(filter(str.isdigit, entry)))

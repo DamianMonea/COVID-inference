@@ -42,7 +42,3 @@ simptom_dict = {"febra": 0,
   "icter": 24,
   "inapententa": 25,
   "lipsa de gust": 25}
-
-
-
-
