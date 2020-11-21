@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import json
+import pickle
 from math import isnan
 from constants import *
 from confirmed_contact_parser import confirmed_contact_parser, check_nan
@@ -9,7 +10,7 @@ from symptom_parser import *
 from parseTimeDate import parseTime
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, accuracy_score, roc_curve, roc_auc_score
 
 class covid_detector:
 
@@ -20,9 +21,7 @@ class covid_detector:
         if self.config[MODE] == TRAIN:
             self.train()
         elif self.config[MODE] == PREDICT:
-            # self.model =
-            pass
-
+            self.model = pickle.load(open(MODEL_NAME + ".pkl", "rb"))
 
     def check_nan(self, e):
         return isinstance(e, float) and isnan(e)
@@ -52,6 +51,8 @@ class covid_detector:
 
         # Parse the test results' date
         results_date = parseTime(sample[11])
+        if results_date == None:
+            return None
 
         result = []
         result.append(inst)
@@ -70,14 +71,16 @@ class covid_detector:
 
     def train(self):
         # Read excel
-        print("Reading data", flush=True)
+        if self.config[VERBOSE] == True:
+            print("=== Reading data ===", flush=True)
         df = pd.read_excel(self.config[TRAIN_PATH], na_values=None)
 
         # Store data in labels in separate arrays
         data = df.iloc[:, :12].values
         labels = df.iloc[:, 12].values
         
-        print("Preprocessing data", flush=True)
+        if self.config[VERBOSE] == True:
+            print("=== Preprocessing data ===", flush=True)
         # Ignore mislabeled data
         X_aux = []
         y_aux = []
@@ -102,9 +105,13 @@ class covid_detector:
                 X_aux[i][2] = self.mean_age
 
         # Extract features
-        print("Extracting features", flush=True)
+        if self.config[VERBOSE] == True:
+            print("=== Extracting features ===", flush=True)
         for i in range(n):
-            X.append(self.extract_features(X_aux[i]))
+            feat = self.extract_features(X_aux[i])
+            if feat == None:
+                continue
+            X.append(feat)
             y.append(y_aux[i])
 
         X = np.array(X)
@@ -112,16 +119,37 @@ class covid_detector:
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
 
-        print("Training model", flush=True)
-        self.model = RandomForestClassifier(n_estimators = 100, criterion = "entropy", max_depth = 10, random_state = 0, verbose = 1)
-        # self.model.fit(X_train, y_train)
-        with open("testfile.txt", "w") as outfile:
-        for i in range(n):
-            
+        if self.config[VERBOSE] == True:
+            print("=== Training model ===", flush=True)
+        self.model = RandomForestClassifier(n_estimators = 50, n_jobs = -1, criterion = "gini", max_depth = 6, random_state = 42, verbose = 0)
+        self.model.fit(X_train, y_train)
+
+        if self.config[VERBOSE] == True:
+            print("=== Saving metrics ===", flush=True)
+        with open("metrics.txt", "w") as metric_file:
+            y_pred = self.model.predict(X_test)
+            acc = accuracy_score(y_test, y_pred)
+            metric_file.write("Accuracy:" + str(round(acc * 100, 2)) +"%\n")
+            tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+            metric_file.write("True positives:" + str(tp) + "\n")
+            metric_file.write("False positives:" + str(fp) + "\n")
+            metric_file.write("True negatives:" + str(tn) + "\n")
+            metric_file.write("False negatives:" + str(fn) + "\n")
+            y_proba = self.model.predict_proba(X_test)[::,1]
+            fpr, tpr, thresholds = roc_curve(y_test, y_proba)
+            auc = roc_auc_score(y_test, y_proba)
+            metric_file.write('AUC: %.3f' % auc)
+            plt.plot(fpr,tpr,label="AUC="+str(round(auc,3)))
+            plt.title("AUC Curve")
+            plt.legend(loc=4)
+            plt.savefig("auc_curve.png", dpi=300, bbox_inches='tight')
         
+        pickle.dump(self.model, open(MODEL_NAME + ".pkl", 'wb'))
+        if self.config[VERBOSE] == True:
+            print("=== DONE ===", flush=True)
 
     # Function to be used for predicting on data through the API
-    def predict(self):
+    def predict(self, data):
         pass
 
 if __name__ == "__main__":

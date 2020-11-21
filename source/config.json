@@ -1,4 +1,5 @@
 {
     "mode": "train",
+    "verbose": false,
     "train_path": "../dataset.xlsx"
 }
