@@ -1,5 +1,6 @@
 {
-    "mode": "train",
-    "train_path": "../dataset.xlsx",
-    "test_path": ""
+    "mode": "predict",
+    "train_path": "../test/dataset.xlsx",
+    "test_path": "",
+    "result_path": "../result/"
 }

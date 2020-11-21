@@ -63,8 +63,10 @@ class covid_detector:
         #     y.append(y_aux[i])
 
     # Function to be used for predicting on data through the API
-    def predict(self):
-        pass
+     # Function to be used for predicting on data through the API
+    def predict(self, data):
+        X = []
+        return X
 
 if __name__ == "__main__":
 
