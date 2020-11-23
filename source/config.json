@@ -1,5 +1,5 @@
 {
-    "mode": "predict",
+    "mode": "train",
     "verbose": true,
     "train_path": "../test/dataset.xlsx",
     "test_path": "",

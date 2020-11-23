@@ -142,6 +142,8 @@ class covid_detector:
             acc = accuracy_score(y_test, y_pred)
             metric_file.write("Accuracy:" + str(round(acc * 100, 2)) +"%\n")
             tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+            metric_file.write("Precision:" + str(tp/(tp+fp)) + "\n")
+            metric_file.write("Recall:" + str(tp/(tp+fn)) + "\n")
             metric_file.write("True positives:" + str(tp) + "\n")
             metric_file.write("False positives:" + str(fp) + "\n")
             metric_file.write("True negatives:" + str(tn) + "\n")
