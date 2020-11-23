@@ -24,6 +24,7 @@ class InitMessageHandler(tornado.web.RequestHandler):
 class GameHandler(tornado.websocket.WebSocketHandler):
 
     json_array = []
+    detector = covid_detector("config.json")
 
     def open(self):
         # called anytime a new connection with this server is opened
@@ -36,12 +37,19 @@ class GameHandler(tornado.websocket.WebSocketHandler):
         # called anytime a new message is received
         res = literal_eval(message)
         if res['type'] == 'J':
+
             print("Received from client, msg = json_array")
-            msg = "Successful operation to receive json_array"
+            print("Now starting proccesing data from client!!")
+
+            msg = "Message is : " + str(self.detector.predict(self.json_array))
+
             self.write_message((msg))
             self.json_array = json.loads(res['message'])
-            with open("JSON_ARRAY.json", "w+", encoding='utf8') as name:
+
+            with open("../result/JSON_ARRAY.json", "w+", encoding='utf8') as name:
                 json.dump(self.json_array, name, ensure_ascii=False)
+
+            print("ENDING proccesing data from client!!")
 
         elif res['type'] == 'M':
             print("Received from client, msg = ", message)

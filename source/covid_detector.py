@@ -152,8 +152,15 @@ class covid_detector:
             print("=== DONE ===", flush=True)
 
     # Function to be used for predicting on data through the API
+<<<<<<< HEAD
+     # Function to be used for predicting on data through the API
     def predict(self, data):
         X = []
+        return X
+=======
+    def predict(self, data):
+        X = []
+>>>>>>> main
 
 if __name__ == "__main__":
 
