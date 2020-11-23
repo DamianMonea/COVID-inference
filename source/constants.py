@@ -3,6 +3,7 @@ TRAIN = "train"
 PREDICT = "predict"
 MODEL_NAME = "covid_model"
 VERBOSE = "verbose"
+MEAN_AGE = "mean_age"
 TRAIN_PATH = "train_path"
 TEST_PATH = "test_path"
 simptom_dict = {"febra": 0,

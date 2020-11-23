@@ -41,13 +41,9 @@ class GameHandler(tornado.websocket.WebSocketHandler):
             print("Received from client, msg = json_array")
             print("Now starting proccesing data from client!!")
 
-            msg = "Message is : " + str(self.detector.predict(self.json_array))
-
-            self.write_message((msg))
             self.json_array = json.loads(res['message'])
-
-            with open("../result/JSON_ARRAY.json", "w+", encoding='utf8') as name:
-                json.dump(self.json_array, name, ensure_ascii=False)
+            msg = json.dumps(self.detector.predict(self.json_array))
+            self.write_message((msg))
 
             print("ENDING proccesing data from client!!")
 

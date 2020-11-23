@@ -1,8 +1,9 @@
+from typing import Type
 import numpy as np
 import pandas as pd
 import json
 import pickle
-from math import isnan
+from math import isnan, nan 
 from constants import *
 from confirmed_contact_parser import confirmed_contact_parser, check_nan
 from label_parser import institution_parser, sex_parser, age_parser, result_parser
@@ -28,44 +29,54 @@ class covid_detector:
 
     # Takes one sample in the dataset and performs FX
     def extract_features(self, sample):
-        # Parse the source institution
         try:
+            # Parse the source institution
+            if sample[0] == None or sample[1] == None or sample[2] == None:
+                return None
             inst = institution_parser(sample[0])
-        except AttributeError as e:
-            print(sample[0])
 
-        # Parse the person's sex
-        s = sex_parser(sample[1])
+            # Parse the person's sex
+            s = sex_parser(sample[1])
 
-        # Parse the age
-        age = age_parser(str(sample[2]), self.mean_age)
+            # Parse the age
+            age = age_parser(str(sample[2]), self.config[MEAN_AGE])
 
-        # Parse declared symptoms
-        decl_sympt = parse_symptoms(str(sample[4]))
+            # Parse declared symptoms
+            decl_sympt = []
+            if sample[4] != None:
+                decl_sympt = parse_symptoms(str(sample[4]))
+            else:
+                decl_sympt = parse_symptoms(str(nan))
 
-        # Parse the symptoms the pacient had when being admitted in the hospital
-        actual_symptoms = parse_symptoms(str(sample[6]))
+            # Parse the symptoms the pacient had when being admitted in the hospital
+            actual_symptoms = []
+            if sample[6] != None:
+                actual_symptoms = parse_symptoms(str(sample[6]))
+            else:
+                actual_symptoms = parse_symptoms(str(nan))
 
-        # Parse the patient's contact history
-        had_contact_with_infected_person = self.contact_parser.parse(str(sample[10]))
+            # Parse the patient's contact history
+            had_contact_with_infected_person = self.contact_parser.parse(str(sample[10]))
 
-        # Parse the test results' date
-        results_date = parseTime(sample[11])
-        if results_date == None:
+            # Parse the test results' date
+            results_date = parseTime(sample[11])
+            if results_date == None:
+                return None
+
+            result = []
+            result.append(inst)
+            result.append(s)
+            result.append(age)
+            result.append(had_contact_with_infected_person)
+            result.append(results_date)
+            for i in range(len(decl_sympt)):
+                result.append(decl_sympt[i])
+            for i in range(len(actual_symptoms)):
+                result.append(actual_symptoms[i])
+
+            return result
+        except TypeError as e:
             return None
-
-        result = []
-        result.append(inst)
-        result.append(s)
-        result.append(age)
-        result.append(had_contact_with_infected_person)
-        result.append(results_date)
-        for i in range(len(decl_sympt)):
-            result.append(decl_sympt[i])
-        for i in range(len(actual_symptoms)):
-            result.append(actual_symptoms[i])
-
-        return result
 
     # istoric de calatorie, mijloace de transport
 
@@ -151,16 +162,42 @@ class covid_detector:
         if self.config[VERBOSE] == True:
             print("=== DONE ===", flush=True)
 
+    def format_entry(self, entry):
+        res = []
+        res.append(entry["instituția sursă"])
+        res.append(entry["sex"])
+        res.append(entry["vârstă"])
+        res.append(entry["dată debut simptome declarate"])
+        res.append(entry["simptome declarate"])
+        res.append(entry["dată internare"])
+        res.append(entry["simptome raportate la internare"])
+        res.append(entry["diagnostic și semne de internare"])
+        res.append(entry["istoric de călătorie"])
+        res.append(entry["mijloace de transport folosite"])
+        res.append(entry["confirmare contact cu o persoană infectată"])
+        res.append(entry["data rezultat testare"])
+        return res
+
     # Function to be used for predicting on data through the API
-<<<<<<< HEAD
-     # Function to be used for predicting on data through the API
     def predict(self, data):
+        processed_data = data
         X = []
-        return X
-=======
-    def predict(self, data):
-        X = []
->>>>>>> main
+        n = len(data)
+        for i in range(n):
+            feat = self.extract_features(self.format_entry(processed_data[i]))
+            if feat != None:
+                processed_data[i]["predictie"] = "date suficiente"
+                X.append(feat)
+            else:
+                processed_data[i]["predictie"] = "date insuficiente"
+        X = np.array(X)
+        y = self.model.predict_proba(X)[::, 1]
+        counter = 0
+        for i in range(n):
+            if processed_data[i]["predictie"] == "date suficiente":
+                processed_data[i]["predictie"] = round(y[counter] * 100, 2)
+                counter += 1
+        return processed_data
 
 if __name__ == "__main__":
 

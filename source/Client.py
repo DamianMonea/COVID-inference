@@ -111,7 +111,9 @@ class Client(object):
             if recv_msg is None: 
                 self.wsconn.close()
                 break
-            print("Server has replied with message=", recv_msg)
+            print("Result stored in result/predictions.json")
+            with open("../result/predictions.json", "w+", encoding='utf8') as name:
+                json.dump(json.loads(recv_msg), name, ensure_ascii=False)
             yield self.send_wsmessage()
         print("IoLoop terminate")
         sys.exit()
