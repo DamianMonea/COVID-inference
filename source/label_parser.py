@@ -8,6 +8,9 @@ def isNaN(string):
     return string != string
 
 def institution_parser(entry):
+
+    if isNaN(entry):
+        return 0
     source = entry.lower()
 
     if source == "x":
@@ -22,6 +25,9 @@ def institution_parser(entry):
 
 def sex_parser(entry):
 
+    if isNaN(entry):
+        return 0
+
     sex = entry.lower()
 
     if sex[0] == 'm':
@@ -32,7 +38,7 @@ def sex_parser(entry):
         return 0
 
 
-def age_parser(entry, mean_age=0):
+def age_parser(entry, mean_age = 0):
 
     age = entry.lower().replace(" ", "")
 

@@ -1,6 +1,12 @@
 {
+<<<<<<< HEAD
     "mode": "predict",
     "train_path": "../test/dataset.xlsx",
     "test_path": "",
     "result_path": "../result/"
+=======
+    "mode": "train",
+    "verbose": false,
+    "train_path": "../dataset.xlsx"
+>>>>>>> main
 }
